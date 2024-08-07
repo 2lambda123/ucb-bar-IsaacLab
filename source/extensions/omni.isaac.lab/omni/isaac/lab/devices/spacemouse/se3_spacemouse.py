@@ -119,13 +119,17 @@ class Se3SpaceMouse(DeviceBase):
         # implement a timeout for device search
         for _ in range(5):
             for device in hid.enumerate():
-                if device["product_string"] == "SpaceMouse Compact":
+                if device["product_string"] in ["SpaceMouse Compact", "Space Navigator"]:
                     # set found flag
                     found = True
                     vendor_id = device["vendor_id"]
                     product_id = device["product_id"]
                     # connect to the device
-                    self._device.open(vendor_id, product_id)
+                    try:
+                        self._device.open(vendor_id, product_id)
+                    except RuntimeError:
+                        print("[INFO]: input device already opened")
+                        pass
             # check if device found
             if not found:
                 time.sleep(1.0)
